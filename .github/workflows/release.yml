@@ -1,0 +1,55 @@
+name: Auto Release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Generate Short SHA Tag
+        id: vars
+        shell: pwsh
+        run: |
+          $shortSha = $env:GITHUB_SHA.Substring(0, 7)
+          $tag = "v-$shortSha"
+          echo "tag=$tag" >> $env:GITHUB_OUTPUT
+          echo "short_sha=$shortSha" >> $env:GITHUB_OUTPUT
+
+      - name: Publish WinForms App
+        run: |
+          dotnet publish Notifier/Notifier.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o ./publish
+
+      - name: Compress Release Package
+        shell: pwsh
+        run: |
+          Compress-Archive -Path ./publish/* -DestinationPath ./Notifier-win-x64.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: Release ${{ steps.vars.outputs.tag }}
+          body: |
+            ## Notifier 自动构建版本
+            - **Commit SHA**: `${{ steps.vars.outputs.short_sha }}`
+            - **构建时间**: `${{ github.event.head_commit.timestamp }}`
+            - **提交信息**: ${{ github.event.head_commit.message }}
+          files: |
+            Notifier-win-x64.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
