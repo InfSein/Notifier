@@ -58,6 +58,8 @@ public class ReminderService : IDisposable
     /// </summary>
     public void Start()
     {
+        if (_timer.Enabled) return;
+
         _timer.Start();
         // 启动时立即执行一次检查（支持开机延迟补提醒）
         CheckReminders();
@@ -78,6 +80,17 @@ public class ReminderService : IDisposable
     {
         _settings = settings;
         CheckReminders();
+    }
+
+    /// <summary>
+    /// 重置指定提醒项在今日的触发状态（例如修改提醒时间后重新激活）
+    /// </summary>
+    public void ResetReminderTriggerState(Guid reminderId)
+    {
+        if (_dailyState.TriggeredReminderIds.Remove(reminderId))
+        {
+            SaveDailyState();
+        }
     }
 
     /// <summary>
@@ -154,6 +167,12 @@ public class ReminderService : IDisposable
     {
         try
         {
+            var directory = Path.GetDirectoryName(_stateFilePath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
             var json = JsonSerializer.Serialize(_dailyState);
             File.WriteAllText(_stateFilePath, json);
         }

@@ -28,6 +28,7 @@ partial class MainForm
     private System.Windows.Forms.DataGridViewCheckBoxColumn colEnabled;
     private System.Windows.Forms.DataGridViewTextBoxColumn colTime;
     private System.Windows.Forms.DataGridViewTextBoxColumn colText;
+    private System.Windows.Forms.DataGridViewButtonColumn colEdit;
     private System.Windows.Forms.DataGridViewButtonColumn colDelete;
 
     protected override void Dispose(bool disposing)
@@ -55,6 +56,7 @@ partial class MainForm
         colEnabled = new DataGridViewCheckBoxColumn();
         colTime = new DataGridViewTextBoxColumn();
         colText = new DataGridViewTextBoxColumn();
+        colEdit = new DataGridViewButtonColumn();
         colDelete = new DataGridViewButtonColumn();
         grpAdd = new GroupBox();
         btnAdd = new Button();
@@ -140,7 +142,7 @@ partial class MainForm
         dgvReminders.ColumnHeadersDefaultCellStyle = dgvHeaderStyle;
         dgvReminders.ColumnHeadersHeight = 30;
         dgvReminders.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-        dgvReminders.Columns.AddRange(new DataGridViewColumn[] { colEnabled, colTime, colText, colDelete });
+        dgvReminders.Columns.AddRange(new DataGridViewColumn[] { colEnabled, colTime, colText, colEdit, colDelete });
         dgvRowStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
         dgvRowStyle.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
         dgvRowStyle.SelectionBackColor = Color.FromArgb(225, 238, 254);
@@ -179,13 +181,21 @@ partial class MainForm
         colText.Name = "colText";
         colText.ReadOnly = true;
         // 
+        // colEdit
+        // 
+        colEdit.HeaderText = "编辑";
+        colEdit.Name = "colEdit";
+        colEdit.Text = "编辑";
+        colEdit.UseColumnTextForButtonValue = true;
+        colEdit.Width = 60;
+        // 
         // colDelete
         // 
-        colDelete.HeaderText = "操作";
+        colDelete.HeaderText = "删除";
         colDelete.Name = "colDelete";
         colDelete.Text = "删除";
         colDelete.UseColumnTextForButtonValue = true;
-        colDelete.Width = 70;
+        colDelete.Width = 60;
         // 
         // grpAdd
         // 
